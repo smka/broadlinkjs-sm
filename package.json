@@ -1,6 +1,6 @@
 {
   "name": "broadlinkjs-sm",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A Node.JS library for controlling Broadlink SP devices",
   "main": "index.js",
   "types": "index.d.ts",
