@@ -12,9 +12,13 @@
         "url": "git+https://github.com/smka/broadlinkjs-sm.git"
     },
     "keywords": [
-        "Broadlink", "IoT", "remote", "control", "sp"
+        "Broadlink",
+        "IoT",
+        "remote",
+        "control",
+        "sp"
     ],
-    "author": "sm",
+    "author": "smka",
     "license": "MIT",
     "bugs": {
         "url": "https://github.com/smka/broadlinkjs-sm/issues"
