@@ -5,6 +5,8 @@ b.on("deviceReady", (dev) => {
     if (dev.host.address == "192.168.1.92") {
         dev.set_power(true);
         dev.exit();
+    } else {
+        dev.exit();
     }
 });
 

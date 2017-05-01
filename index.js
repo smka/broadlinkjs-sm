@@ -170,7 +170,6 @@ Broadlink.prototype.discover = function() {
 
     cs.on("message", (msg, rinfo) => {
         var host = rinfo;
-        //if (host.address == this.sp_ip) {
 
         var mac = Buffer.alloc(6, 0);
         msg.copy(mac, 0x00, 0x3F);
@@ -180,7 +179,6 @@ Broadlink.prototype.discover = function() {
         msg.copy(mac, 0x04, 0x3B);
         msg.copy(mac, 0x05, 0x3A);
 
-        // if (mac.equals(this.mcb()) || host.address == this.sp_ip) {
         var devtype = msg[0x34] | msg[0x35] << 8;
         if (!this.devices) {
             this.devices = {};
@@ -195,8 +193,7 @@ Broadlink.prototype.discover = function() {
     });
 
     cs.on('close', function() {
-        console.log('===Server Closed');
-        //process.exit(0);
+        //console.log('===Server Closed');
     });
 
     cs.bind();
@@ -466,11 +463,11 @@ device.prototype.sp2 = function() {
                 var pwr = Boolean(payload[0x4]);
                 this.emit("power", pwr);
                 break;
-            case 4:
-                console.log('case 4');
-                break;
             case 3:
                 console.log('case 3');
+                break;
+            case 4:
+                console.log('case 4');
                 break;
         }
 

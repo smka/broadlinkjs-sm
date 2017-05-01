@@ -2,8 +2,8 @@
 let broadlink = require('../../broadlinkjs-sm');
 let fs = require('fs');
 
-var b = new broadlink(); // your SP ip here
-//var b = new broadlink("", );
+var b = new broadlink();
+
 var mcb = function() {
     var mac = new Buffer(6);
     var mac_str = "34:ea:34:e4:00:55";
@@ -14,6 +14,7 @@ var mcb = function() {
     }
     return mac;
 }
+
 b.discover();
 
 b.on("deviceReady", (dev) => {
@@ -41,9 +42,5 @@ b.on("deviceReady", (dev) => {
     } else {
         dev.exit();
     }
-
-    // сделать проверку введенного мак адреса!
-    // var m = "34:ea:34:e4:00:55";
-    // var m = "34:ea:34:e3:e4:6b";
 
 });
