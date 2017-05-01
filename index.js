@@ -4,10 +4,9 @@ let dgram = require('dgram');
 let os = require('os');
 let crypto = require('crypto');
 
-var Broadlink = module.exports = function(sp_ip) {
+var Broadlink = module.exports = function() {
     EventEmitter.call(this);
     this.devices = {};
-    this.sp_ip = sp_ip;
 }
 util.inherits(Broadlink, EventEmitter);
 
@@ -38,7 +37,7 @@ Broadlink.prototype.genDevice = function(devtype, host, mac) {
         dev = new device(host, mac);
         dev.sp2();
         return dev;;
-    } else if (devtype == 0x2733 || devtype == 0x273e) { // OEM branded SPMini
+    } else if (devtype == 0x2733 || devtype == 0x273e) { // OEM branded SPMini Contos
         dev = new device(host, mac);
         dev.sp2();
         return dev;;
@@ -171,38 +170,40 @@ Broadlink.prototype.discover = function() {
 
     cs.on("message", (msg, rinfo) => {
         var host = rinfo;
-        if (host.address == this.sp_ip) {
-            var mac = Buffer.alloc(6, 0);
-            msg.copy(mac, 0x00, 0x3F);
-            msg.copy(mac, 0x01, 0x3E);
-            msg.copy(mac, 0x02, 0x3D);
-            msg.copy(mac, 0x03, 0x3C);
-            msg.copy(mac, 0x04, 0x3B);
-            msg.copy(mac, 0x05, 0x3A);
+        //if (host.address == this.sp_ip) {
 
-            var devtype = msg[0x34] | msg[0x35] << 8;
-            if (!this.devices) {
-                this.devices = {};
-            }
+        var mac = Buffer.alloc(6, 0);
+        msg.copy(mac, 0x00, 0x3F);
+        msg.copy(mac, 0x01, 0x3E);
+        msg.copy(mac, 0x02, 0x3D);
+        msg.copy(mac, 0x03, 0x3C);
+        msg.copy(mac, 0x04, 0x3B);
+        msg.copy(mac, 0x05, 0x3A);
 
-            if (!this.devices[mac]) {
-                var dev = this.genDevice(devtype, host, mac);
-                this.devices[mac] = dev;
-                dev.on("deviceReady", () => { this.emit("deviceReady", dev); });
-                dev.auth();
-                setTimeout(function() {
-                    cs.close();
-                }, 300);
-            }
+        // if (mac.equals(this.mcb()) || host.address == this.sp_ip) {
+        var devtype = msg[0x34] | msg[0x35] << 8;
+        if (!this.devices) {
+            this.devices = {};
+        }
+
+        if (!this.devices[mac]) {
+            var dev = this.genDevice(devtype, host, mac);
+            this.devices[mac] = dev;
+            dev.on("deviceReady", () => { this.emit("deviceReady", dev); });
+            dev.auth();
         }
     });
 
     cs.on('close', function() {
-        //console.log('===Server Closed');
+        console.log('===Server Closed');
         //process.exit(0);
     });
 
     cs.bind();
+
+    setTimeout(function() {
+        cs.close();
+    }, 300);
 }
 
 function device(host, mac, timeout = 10) {
@@ -297,7 +298,6 @@ device.prototype.exit = function() {
     setTimeout(function() {
         self.cs.close();
     }, 500);
-
 }
 
 device.prototype.getType = function() {
