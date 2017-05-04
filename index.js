@@ -357,9 +357,9 @@ device.prototype.sendPacket = function(command, payload) {
 
 device.prototype.mp1 = function() {
     this.type = "MP1";
-    this.prototype.set_power_mask = function(sid_mask, state) {
+    this.prototype.set_power = function(sid, state) {
         //"""Sets the power state of the smart power strip."""
-
+        var sid_mask = 0x01 << (sid - 1);
         var packet = Buffer.alloc(16, 0);
         packet[0x00] = 0x0d;
         packet[0x02] = 0xa5;
@@ -374,12 +374,6 @@ device.prototype.mp1 = function() {
         packet[0x0e] = state ? sid_mask : 0;
 
         this.sendPacket(0x6a, packet);
-    }
-
-    this.set_power = function(sid, state) {
-        //"""Sets the power state of the smart power strip."""
-        var sid_mask = 0x01 << (sid - 1);
-        this.set_power_mask(sid_mask, state);
     }
 
     this.check_power = function() {
