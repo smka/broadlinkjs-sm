@@ -40,7 +40,7 @@ b.on("deviceReady", (dev) => {
         }, 3000);
 
     } else {
-        console.log(dev.type + " found... not MP1!");
+        console.log(dev.type + "@" + dev.host.address + " found... not MP1!");
         dev.exit();
     }
 
