@@ -90,12 +90,12 @@ Broadlink.prototype.genDevice = function(devtype, host, mac) {
            dev = new device(host, mac);
            dev.a1();
            return dev;;
-       } else if (devtype == 0x4EB5) { // MP1
-           dev = new device(host, mac);
-           dev.mp1();
-           return dev;;
-       }*/
-    else {
+       } */
+    else if (devtype == 0x4EB5) { // MP1
+        dev = new device(host, mac);
+        dev.mp1();
+        return dev;;
+    } else {
         dev = new device(host, mac);
         //dev.device();
         return dev;;
@@ -380,7 +380,8 @@ device.prototype.mp1 = function() {
         var sid_mask = 0x01 << (sid - 1);
         this.set_power_mask(sid_mask, state);
     }
-    this.check_power_raw = function() {
+
+    this.check_power = function() {
         //"""Returns the power state of the smart power strip in raw format."""
         var packet = bytearray(16);
         packet[0x00] = 0x0a;
@@ -408,18 +409,44 @@ device.prototype.mp1 = function() {
            */
     }
 
-    this.check_power = function() {
-        //"""Returns the power state of the smart power strip."""
-        /*
-           state = this.check_power_raw();
-           data = {};
-           data['s1'] = bool(state & 0x01);
-           data['s2'] = bool(state & 0x02);
-           data['s3'] = bool(state & 0x04);
-           data['s4'] = bool(state & 0x08);
-           return data;
-           */
-    }
+    this.on("payload", (err, payload) => {
+        var param = payload[0];
+        switch (param) {
+            case 1:
+                console.log("case 1 -");
+                var s1 = Boolean(payload[0x0e] & 0x01);
+                this.emit("s1_power", s1);
+                var s2 = Boolean(payload[0x0e] & 0x02);
+                this.emit("s2_power", s2);
+                var s3 = Boolean(payload[0x0e] & 0x04);
+                this.emit("s3_power", s3);
+                var s4 = Boolean(payload[0x0e] & 0x08);
+                this.emit("s4_power", s4);
+                break;
+            case 2:
+                console.log("case 2 -");
+                break;
+            case 3:
+                console.log("case 3 -");
+                break;
+            case 4:
+                console.log("case 4 -");
+                break;
+        }
+    });
+
+    //this.check_power = function() {
+    //"""Returns the power state of the smart power strip."""
+    /*
+       state = this.check_power_raw();
+       data = {};
+       data['s1'] = bool(state & 0x01);
+       data['s2'] = bool(state & 0x02);
+       data['s3'] = bool(state & 0x04);
+       data['s4'] = bool(state & 0x08);
+       return data;
+       */
+    //}
 
 
 }
