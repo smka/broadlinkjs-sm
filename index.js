@@ -92,6 +92,7 @@ Broadlink.prototype.genDevice = function(devtype, host, mac) {
            return dev;;
        } */
     else if (devtype == 0x4EB5) { // MP1
+        console.log("MP1 found..");
         dev = new device(host, mac);
         dev.mp1();
         return dev;;
@@ -383,7 +384,7 @@ device.prototype.mp1 = function() {
 
     this.check_power = function() {
         //"""Returns the power state of the smart power strip in raw format."""
-        var packet = bytearray(16);
+        var packet = Buffer.alloc(16, 0);
         packet[0x00] = 0x0a;
         packet[0x02] = 0xa5;
         packet[0x03] = 0xa5;
@@ -431,6 +432,17 @@ device.prototype.mp1 = function() {
                 break;
             case 4:
                 console.log("case 4 -");
+                break;
+            default:
+                console.log("case default -");
+                var s1 = Boolean(payload[0x0e] & 0x01);
+                this.emit("s1_power", s1);
+                var s2 = Boolean(payload[0x0e] & 0x02);
+                this.emit("s2_power", s2);
+                var s3 = Boolean(payload[0x0e] & 0x04);
+                this.emit("s3_power", s3);
+                var s4 = Boolean(payload[0x0e] & 0x08);
+                this.emit("s4_power", s4);
                 break;
         }
     });
