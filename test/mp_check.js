@@ -11,20 +11,11 @@ b.on("deviceReady", (dev) => {
         console.log("check power...");
         dev.check_power();
 
-        dev.on("s1_power", (s1) => {
-            console.log("s1 power is on " + s1);
-        });
-
-        dev.on("s2_power", (s2) => {
-            console.log("s2 power is on " + s2);
-        });
-
-        dev.on("s3_power", (s3) => {
-            console.log("s3 power is on " + s3);
-        });
-
-        dev.on("s4_power", (s4) => {
-            console.log("s4 power is on " + s4);
+        dev.on("mp_power", (status_array) => {
+            console.log("s1 power is on " + status_array[0]);
+            console.log("s2 power is on " + status_array[1]);
+            console.log("s3 power is on " + status_array[2]);
+            console.log("s4 power is on " + status_array[3]);
         });
 
         setTimeout(function() {

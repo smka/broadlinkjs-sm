@@ -16,90 +16,90 @@ Broadlink.prototype.genDevice = function(devtype, host, mac) {
     if (devtype == 0) { // SP1
         dev = new device(host, mac);
         dev.sp1();
-        return dev;;
+        return dev;
     } else if (devtype == 0x2711) { // SP2
         dev = new device(host, mac);
         dev.sp2();
-        return dev;;
+        return dev;
     } else if (devtype == 0x2719 || devtype == 0x7919 || devtype == 0x271a || devtype == 0x791a) { // Honeywell SP2
         dev = new device(host, mac);
         dev.sp2();
-        return dev;;
+        return dev;
     } else if (devtype == 0x2720) { // SPMini
         dev = new device(host, mac);
         dev.sp2();
-        return dev;;
+        return dev;
     } else if (devtype == 0x753e) { // SP3
         dev = new device(host, mac);
         dev.sp2();
-        return dev;;
+        return dev;
     } else if (devtype == 0x2728) { // SPMini2
         dev = new device(host, mac);
         dev.sp2();
-        return dev;;
+        return dev;
     } else if (devtype == 0x2733 || devtype == 0x273e) { // OEM branded SPMini Contos
         dev = new device(host, mac);
         dev.sp2();
-        return dev;;
+        return dev;
     } else if (devtype >= 0x7530 && devtype <= 0x7918) { // OEM branded SPMini2
         dev = new device(host, mac);
         dev.sp2();
-        return dev;;
+        return dev;
     } else if (devtype == 0x2736) { // SPMiniPlus
         dev = new device(host, mac);
         dev.sp2();
-        return dev;;
+        return dev;
     }
     /*else if (devtype == 0x2712) { // RM2
            dev = new device(host, mac);
            dev.rm();
-           return dev;;
+           return dev;
        } else if (devtype == 0x2737) { // RM Mini
            dev = new device(host, mac);
            dev.rm();
-           return dev;;
+           return dev;
        } else if (devtype == 0x273d) { // RM Pro Phicomm
            dev = new device(host, mac);
            dev.rm();
-           return dev;;
+           return dev;
        } else if (devtype == 0x2783) { // RM2 Home Plus
            dev = new device(host, mac);
            dev.rm();
-           return dev;;
+           return dev;
        } else if (devtype == 0x277c) { // RM2 Home Plus GDT
            dev = new device(host, mac);
            dev.rm();
-           return dev;;
+           return dev;
        } else if (devtype == 0x272a) { // RM2 Pro Plus
            dev = new device(host, mac);
            dev.rm();
-           return dev;;
+           return dev;
        } else if (devtype == 0x2787) { // RM2 Pro Plus2
            dev = new device(host, mac);
            dev.rm();
-           return dev;;
+           return dev;
        } else if (devtype == 0x278b) { // RM2 Pro Plus BL
            dev = new device(host, mac);
            dev.rm();
-           return dev;;
+           return dev;
        } else if (devtype == 0x278f) { // RM Mini Shate
            dev = new device(host, mac);
            dev.rm();
-           return dev;;
-       } else if (devtype == 0x2714) { // A1
-           dev = new device(host, mac);
-           dev.a1();
-           return dev;;
+           return dev;
        } */
-    else if (devtype == 0x4EB5) { // MP1
-        console.log("MP1 found..");
+    else if (devtype == 0x2714) { // A1
+        dev = new device(host, mac);
+        dev.a1();
+        return dev;
+    } else if (devtype == 0x4EB5) { // MP1
         dev = new device(host, mac);
         dev.mp1();
-        return dev;;
+        return dev;
     } else {
-        dev = new device(host, mac);
+        console.log("unknown device found... dev_type: " + devtype.toString(16));
+        //dev = new device(host, mac);
         //dev.device();
-        return dev;;
+        //return dev;
     }
 }
 
@@ -390,19 +390,6 @@ device.prototype.mp1 = function() {
         packet[0x08] = 0x01;
 
         this.sendPacket(0x6a, packet);
-        /*
-           err = response[0x22] | (response[0x23] << 8);
-           if(err == 0){
-           aes = AES.new(bytes(this.key), AES.MODE_CBC, bytes(self.iv));
-           payload = aes.decrypt(bytes(response[0x38:]));
-           if(type(payload[0x4]) == int){
-           state = payload[0x0e];
-           }else{
-           state = ord(payload[0x0e]);
-           }
-           return state;
-           }
-           */
     }
 
     this.on("payload", (err, payload) => {
@@ -420,35 +407,18 @@ device.prototype.mp1 = function() {
             case 4:
                 console.log("case 4 -");
                 break;
+            case 14:
+                var s1 = Boolean(payload[0x0e] & 0x01);
+                var s2 = Boolean(payload[0x0e] & 0x02);
+                var s3 = Boolean(payload[0x0e] & 0x04);
+                var s4 = Boolean(payload[0x0e] & 0x08);
+                this.emit("mp_power", [s1, s2, s3, s4]);
+                break;
             default:
                 console.log("case default - " + param);
-                console.log("case value - " + parseInt(param));
-                var s1 = Boolean(payload[0x0e] & 0x01);
-                this.emit("s1_power", s1);
-                var s2 = Boolean(payload[0x0e] & 0x02);
-                this.emit("s2_power", s2);
-                var s3 = Boolean(payload[0x0e] & 0x04);
-                this.emit("s3_power", s3);
-                var s4 = Boolean(payload[0x0e] & 0x08);
-                this.emit("s4_power", s4);
                 break;
         }
     });
-
-    //this.check_power = function() {
-    //"""Returns the power state of the smart power strip."""
-    /*
-       state = this.check_power_raw();
-       data = {};
-       data['s1'] = bool(state & 0x01);
-       data['s2'] = bool(state & 0x02);
-       data['s3'] = bool(state & 0x04);
-       data['s4'] = bool(state & 0x08);
-       return data;
-       */
-    //}
-
-
 }
 
 
