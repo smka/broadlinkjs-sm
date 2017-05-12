@@ -187,9 +187,11 @@ Broadlink.prototype.discover = function() {
 
         if (!this.devices[mac]) {
             var dev = this.genDevice(devtype, host, mac);
-            this.devices[mac] = dev;
-            dev.on("deviceReady", () => { this.emit("deviceReady", dev); });
-            dev.auth();
+            if (dev) {
+                this.devices[mac] = dev;
+                dev.on("deviceReady", () => { this.emit("deviceReady", dev); });
+                dev.auth();
+            }
         }
     });
 
