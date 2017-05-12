@@ -96,7 +96,7 @@ Broadlink.prototype.genDevice = function(devtype, host, mac) {
         dev.mp1();
         return dev;
     } else {
-        console.log("unknown device found... dev_type: " + devtype.toString(16) + " @ " + host.address);
+        //console.log("unknown device found... dev_type: " + devtype.toString(16) + " @ " + host.address);
         //dev = new device(host, mac);
         //dev.device();
         return null;
