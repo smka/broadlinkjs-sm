@@ -37,7 +37,7 @@ Broadlink.prototype.genDevice = function(devtype, host, mac) {
         dev = new device(host, mac);
         dev.sp2();
         return dev;
-    } else if (devtype == 0x2733 || devtype == 0x273e) { // OEM branded SPMini Contos
+    } else if (devtype == 0x2733 || devtype == 0x273e) { // OEM branded SPMini Contros
         dev = new device(host, mac);
         dev.sp2();
         return dev;
