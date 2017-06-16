@@ -95,6 +95,10 @@ Broadlink.prototype.genDevice = function(devtype, host, mac) {
         dev = new device(host, mac);
         dev.mp1();
         return dev;
+    } else if (devtype == 0x4F1B) { // MP2
+        dev = new device(host, mac);
+        dev.mp2();
+        return dev;
     } else {
         //console.log("unknown device found... dev_type: " + devtype.toString(16) + " @ " + host.address);
         //dev = new device(host, mac);
@@ -423,6 +427,71 @@ device.prototype.mp1 = function() {
     });
 }
 
+device.prototype.mp2 = function() {
+    this.type = "MP2";
+
+    this.set_power = function(sid, state) {
+        //"""Sets the power state of the smart power strip."""
+        var sid_mask = 0x01 << (sid - 1);
+        var packet = Buffer.alloc(16, 0);
+        packet[0x00] = 0x0d;
+        packet[0x02] = 0xa5;
+        packet[0x03] = 0xa5;
+        packet[0x04] = 0x5a;
+        packet[0x05] = 0x5a;
+        packet[0x06] = 0xb2 + (state ? (sid_mask << 1) : sid_mask);
+        packet[0x07] = 0xc0;
+        packet[0x08] = 0x02;
+        packet[0x0a] = 0x03;
+        packet[0x0d] = sid_mask;
+        packet[0x0e] = state ? sid_mask : 0;
+
+        this.sendPacket(0x6a, packet);
+    }
+
+    this.check_power = function() {
+        //"""Returns the power state of the smart power strip in raw format."""
+        var packet = Buffer.alloc(16, 0);
+        packet[0x00] = 0x0a;
+        packet[0x02] = 0xa5;
+        packet[0x03] = 0xa5;
+        packet[0x04] = 0x5a;
+        packet[0x05] = 0x5a;
+        packet[0x06] = 0xae;
+        packet[0x07] = 0xc0;
+        packet[0x08] = 0x01;
+
+        this.sendPacket(0x6a, packet);
+    }
+
+    this.on("payload", (err, payload) => {
+        var param = payload[0];
+        switch (param) {
+            case 1:
+                console.log("case 1 -");
+                break;
+            case 2:
+                console.log("case 2 -");
+                break;
+            case 3:
+                console.log("case 3 -");
+                break;
+            case 4:
+                console.log("case 4 -");
+                break;
+            case 0x1b:
+                var s1 = Boolean(payload[0x0e] & 0x01);
+                var s2 = Boolean(payload[0x0e] & 0x02);
+                var s3 = Boolean(payload[0x0e] & 0x04);
+                var s4 = Boolean(payload[0x0e] & 0x08);
+                this.emit("mp_power", [s1, s2, s3, s4]);
+                break;
+            default:
+                console.log("case default - " + param);
+                break;
+        }
+    });
+}
 
 device.prototype.sp1 = function() {
     this.type = "SP1";
