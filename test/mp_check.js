@@ -7,7 +7,7 @@ var b = new broadlink();
 b.discover();
 
 b.on("deviceReady", (dev) => {
-    if (dev.type == "MP1") {
+    if (dev.type == "MP1" || dev.type == "MP2") {
         console.log("check power...");
         dev.check_power();
 
