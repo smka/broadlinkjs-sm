@@ -19,7 +19,7 @@ declare class Broadlink extends EventEmitter {
     /**
      * Start the discovery procedure
      */
-    discover(): void;
+    discover(local_ip_address?: string): void;
 }
 
 declare namespace Broadlink {

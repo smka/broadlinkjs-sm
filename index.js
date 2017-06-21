@@ -107,19 +107,23 @@ Broadlink.prototype.genDevice = function(devtype, host, mac) {
     }
 }
 
-Broadlink.prototype.discover = function() {
+Broadlink.prototype.discover = function(local_ip_address) {
     self = this;
     var interfaces = os.networkInterfaces();
-    var addresses = [];
-    for (var k in interfaces) {
-        for (var k2 in interfaces[k]) {
-            var address = interfaces[k][k2];
-            if (address.family === 'IPv4' && !address.internal) {
-                addresses.push(address.address);
+    if (local_ip_address) {
+        var address = local_ip_address.split('.');
+    } else {
+        var addresses = [];
+        for (var k in interfaces) {
+            for (var k2 in interfaces[k]) {
+                var address = interfaces[k][k2];
+                if (address.family === 'IPv4' && !address.internal) {
+                    addresses.push(address.address);
+                }
             }
         }
+        var address = addresses[0].split('.');
     }
-    var address = addresses[0].split('.');
     var cs = dgram.createSocket({ type: 'udp4', reuseAddr: true });
     cs.on('listening', function() {
         cs.setBroadcast(true);
