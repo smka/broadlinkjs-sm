@@ -207,7 +207,7 @@ Broadlink.prototype.discover = function(local_ip_address) {
         //console.log('===Server Closed');
     });
 
-    cs.bind();
+    cs.bind(0, address);
 
     setTimeout(function() {
         cs.close();
