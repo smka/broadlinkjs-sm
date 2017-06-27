@@ -107,19 +107,23 @@ Broadlink.prototype.genDevice = function(devtype, host, mac) {
     }
 }
 
-Broadlink.prototype.discover = function() {
+Broadlink.prototype.discover = function(local_ip_address) {
     self = this;
     var interfaces = os.networkInterfaces();
-    var addresses = [];
-    for (var k in interfaces) {
-        for (var k2 in interfaces[k]) {
-            var address = interfaces[k][k2];
-            if (address.family === 'IPv4' && !address.internal) {
-                addresses.push(address.address);
+    if (local_ip_address) {
+        var address = local_ip_address;
+    } else {
+        var addresses = [];
+        for (var k in interfaces) {
+            for (var k2 in interfaces[k]) {
+                var address = interfaces[k][k2];
+                if (address.family === 'IPv4' && !address.internal) {
+                    addresses.push(address.address);
+                }
             }
         }
+        var address = addresses[0];
     }
-    var address = addresses[0].split('.');
     var cs = dgram.createSocket({ type: 'udp4', reuseAddr: true });
     cs.on('listening', function() {
         cs.setBroadcast(true);
@@ -153,10 +157,11 @@ Broadlink.prototype.discover = function() {
         packet[0x11] = now.getDay();
         packet[0x12] = now.getDate();
         packet[0x13] = now.getMonth();
-        packet[0x18] = parseInt(address[0]);
-        packet[0x19] = parseInt(address[1]);
-        packet[0x1a] = parseInt(address[2]);
-        packet[0x1b] = parseInt(address[3]);
+        var address_parts = address.split('.');
+        packet[0x18] = parseInt(address_parts[0]);
+        packet[0x19] = parseInt(address_parts[1]);
+        packet[0x1a] = parseInt(address_parts[2]);
+        packet[0x1b] = parseInt(address_parts[3]);
         packet[0x1c] = port & 0xff;
         packet[0x1d] = port >> 8;
         packet[0x26] = 6;
@@ -203,7 +208,7 @@ Broadlink.prototype.discover = function() {
         //console.log('===Server Closed');
     });
 
-    cs.bind();
+    cs.bind(0, address);
 
     setTimeout(function() {
         cs.close();
