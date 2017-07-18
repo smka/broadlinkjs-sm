@@ -1,5 +1,5 @@
 'use strict';
-let broadlink = require('broadlinkjs');
+let broadlink = require('broadlinkjs-sm');
 let fs = require('fs');
 
 var b = new broadlink();
@@ -24,7 +24,7 @@ b.on("deviceReady", (dev) => {
             clearInterval(timer);
         }); 
     });
-    dev.checkTemperature();
+    // dev.checkTemperature();
 
 });
 
